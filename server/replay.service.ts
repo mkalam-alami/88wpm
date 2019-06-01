@@ -27,7 +27,7 @@ export async function saveReplay(replay: Replay): Promise<void> {
             replay.bestTime = false;
         } else {
             replay.bestTime = true;
-            existingReplay.bestTime = true;
+            existingReplay.bestTime = false;
             await replaysCollection.asyncUpdate({ _id: existingReplay._id! }, existingReplay);
         }
     } else {

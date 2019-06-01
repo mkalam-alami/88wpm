@@ -15,6 +15,31 @@ body {
     background-color: #07021a;
 }
 
+input {
+    padding: 5px;
+    font-size: 24px;
+    background-color: white;
+    color: black;
+    border: 0;
+}
+input[type=text] {
+    box-shadow: 5px 5px 15px -5px black inset;
+}
+input[type=button] {
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+input[type=button]:hover {
+    background-color: #dba1be;
+}
+
+p {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
 /* Header */
 
 #header {
@@ -83,6 +108,7 @@ body {
 
 #footer {
     position: fixed;
+    z-index: 1;
     bottom: 0;
     left: 0;
     right: 0;
@@ -124,11 +150,7 @@ body {
 }
 
 #text-input {
-    padding: 5px;
     font-size: 32px;
-    background-color: white;
-    color: black;
-    border: 0;
 }
 
 #stats {
@@ -137,4 +159,46 @@ body {
     width: 49%;
     font-size: 32px;
     color: white;
+}
+
+/* Overlay */
+
+.overlay {
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    background-color: rgba(50,30,65, .7);
+}
+
+.overlay-panel {
+    position: absolute;
+    left: 50%;
+    margin-left: -225px;
+    top: 25%;
+    background-color: #100835;
+    color: white;
+    width: 450px;
+    box-shadow: 3px 3px 3px black;
+}
+
+.overlay-panel h1 {
+    background-color: #100835;
+    line-height: 60px;
+    box-shadow: 0 -40px 40px -40px rgba(255, 100, 150, 0.8) inset, 0 -10px 10px -15px white inset;
+    border-bottom: 3px solid #100835;
+    padding: 0 20px;
+}
+
+.overlay-panel-body {
+    background-color: #07021a;
+    padding: 20px;
+}
+
+.legend {
+    font-style: italic;
+    color: #dba1be;
 }

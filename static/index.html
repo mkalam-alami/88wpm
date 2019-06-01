@@ -26,10 +26,37 @@
             </div>
             <div id="toolbar">
                 <div id="text-input-holder">
-                    <input id="text-input" v-model="textInput" />
+                    <input id="text-input" v-model="textInput" v-on:keyup="onTextInput($event)" />
                 </div>
-                <div id="stats">
+                <div id="stats" v-if="activeScreen === 'play'">
                     {{ ranking | ordinal }}/{{ lanes.length }} &nbsp; {{ wpm }}wpm
+                </div>
+            </div>
+        </div>
+
+        <div v-if="activeScreen === 'menu'" class="overlay">
+            <div class="overlay-panel">
+                <h1>Welcome to 88wpm</h1>
+                <form class="overlay-panel-body" v-on:submit="$event.preventDefault() || newGame()">
+                    <p class="legend">In this typing game, be the first to type the full paragraph of text and reach the finish line!</p>
+                    <p>1. Choose a nickname</p>
+                    <input class="input" v-model="nick" type="text" />
+                    <p>2. Press "New game"... and get ready to type!</p>
+                    <input type="button" v-on:click="newGame()" value="New game" />
+                </form>
+            </div>
+        </div>
+
+        <div v-if="activeScreen === 'gameOver'" class="overlay">
+            <div class="overlay-panel">
+                <h1>Game complete!</h1>
+                <div class="overlay-panel-body">
+                    <h2>Ranking: {{ ranking | ordinal }}/{{ lanes.length }}</h2>
+                    <h2>Typing speed: {{ wpm }}wpm</p>
+                    <p class="legend" v-if="wpm > 88">Over 88 words per minute Marty! A pace from the future!</p>
+                    
+                    <input type="button" v-on:click="newGame()" value="New game" />
+                    <input type="button" v-on:click="reset()" value="Back to menu" />
                 </div>
             </div>
         </div>

@@ -13,6 +13,8 @@ Vue.use(vueNumeralFilter);
 
 const socket = io.connect("/");
 
+type ActiveScreen = "menu" | "play" | "gameOver";
+
 interface CarLane {
     nick: string;
     sprite: string;
@@ -20,28 +22,29 @@ interface CarLane {
     progressPercent: number;
 }
 
+const defaultData = {
+    nick: "",
+    sprite: "car1",
+    circuit: {
+        name: "",
+        text: [] as string[]
+    },
+    textInput: "",
+    currentWordError: false,
+    lanes: [] as CarLane[],
+    startTime: 0,
+    currentTime: 0,
+    activeScreen: "menu" as ActiveScreen,
+    wpm: 0
+};
+
 new Vue({
     el: "#app",
-
-    data: {
-        nick: "unknown",
-        sprite: "car1",
-        circuit: {
-            name: "",
-            text: [] as string[]
-        },
-        textInput: "",
-        currentWordError: false,
-        lanes: [] as CarLane[],
-        startTime: 0,
-        currentTime: 0,
-        gameOver: false,
-        wpm: 0
-    },
+    data: defaultData,
 
     watch: {
         textInput(value: string) {
-            if (this.gameOver) {
+            if (this.activeScreen !== "play") {
                 return;
             }
 
@@ -56,7 +59,7 @@ new Vue({
                     this.ownLane.wordTiming.push(elapsedTime);
                     this.textInput = "";
                     if (this.ownLane.wordTiming.length >= this.circuit.text.length) {
-                        this.gameOver = true;
+                        this.activeScreen = "gameOver";
                     }
 
                     const lettersTyped = this.circuit.text.slice(0, this.ownLane.wordTiming.length).join("").length;
@@ -109,30 +112,43 @@ new Vue({
     },
 
     async mounted() {
-        await this.newGame();
-
         setInterval(() => {
             // Force progress refresh of other cars
-            this.currentTime = Date.now();
-            const elapsedTime = this.currentTime - this.startTime;
-            this.lanes.forEach((lane) => {
-                lane.progressPercent = ui.progressPercentFromWordTiming(
-                    elapsedTime, lane.wordTiming, this.circuit.text.length);
-            });
+            if (this.activeScreen === "play") {
+                this.currentTime = Date.now();
+                const elapsedTime = this.currentTime - this.startTime;
+                this.lanes.forEach((lane) => {
+                    lane.progressPercent = ui.progressPercentFromWordTiming(
+                        elapsedTime, lane.wordTiming, this.circuit.text.length);
+                });
+            }
         }, 500);
     },
 
     methods: {
         async newGame() {
+            this.reset();
+            this.activeScreen = "play";
+            this.nick = this.nick || "unknown";
             const response = await this.axios.get<GetRandomCircuit>(GetRandomCircuitURI + `?nick=${this.nick}`);
             this.circuit = response.data.circuit;
             this.lanes = [
-                { nick: this.nick, sprite: this.sprite, wordTiming: [], progressPercent: 0 },
-                ...response.data.replays.map((replay) => ({ ...replay, progressPercent: 0 }))
+                { nick: this.nick, sprite: this.sprite, wordTiming: [], progressPercent: 0.0 },
+                ...response.data.replays.map((replay) => ({ ...replay, progressPercent: 0.0 }))
             ];
             this.startTime = Date.now();
-            this.gameOver = false;
-            this.wpm = 0;
+            (document.getElementById("text-input") as HTMLInputElement).focus();
+        },
+        reset() {
+            this.circuit = { name: "", text: [] };
+            this.lanes = [{ nick: this.nick, sprite: this.sprite, wordTiming: [], progressPercent: 0.0 }];
+            this.activeScreen = "menu";
+            this.wpm = 0.;
+        },
+        onTextInput(event: KeyboardEvent) {
+            if (event.keyCode === 27/*ESCAPE*/) {
+                this.reset();
+            }
         }
     }
 });
