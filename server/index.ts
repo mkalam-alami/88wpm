@@ -15,8 +15,9 @@ import * as findUp from "find-up";
 import * as mkdirp from "mkdirp";
 import * as fs from "fs";
 import * as util from "util";
+
 import { log } from "./log";
-import { configureRoutes } from "./routes";
+import { configureRoutes } from "./api";
 
 const ROOT_PATH = path.dirname(findUp.sync("package.json", { cwd: __dirname }));
 
