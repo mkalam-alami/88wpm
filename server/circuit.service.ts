@@ -1,9 +1,8 @@
-import { circuitsCollection, NedbCallback, NedbFindCallback } from "./core/db";
+import { circuitsCollection } from "./core/db";
 
 export interface Circuit {
     name: string;
     text: string;
-    replays: string[];
 }
 
 export async function findCircuit(options: Partial<Circuit>): Promise<Circuit> {
