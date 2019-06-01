@@ -5,10 +5,24 @@
     <link rel="stylesheet" href="styles/index.css" />
 </head>
 <body>
+    <div id="header">
+        <img id="logo" src="images/logo_transparent.png" />
+    </div>
     <div id="app" v-cloak>
-        <h1>Hello {{ who }}</h1>
-        <img src="images/logo.jpg" width="200" />
-        <p>{{ message }}</p>
+        <div class="lane" v-for="n in carCount">
+            <img class="car" v-bind:src="'images/car' + n + '.png'" />
+        </div>
+        <div id="footer">
+            <div id="text"><span class="done">Lorem ipsum dolor sit amet, consectetur</span> <span class="todo">adipiscing</span> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+            <div id="toolbar">
+                <div id="text-input-holder">
+                    <input id="text-input" />
+                </div>
+                <div id="stats">
+                    0:00:00
+                </div>
+            </div>
+        </div>
     </div>
     <script src="dist/client/site.js"></script>
 </body>

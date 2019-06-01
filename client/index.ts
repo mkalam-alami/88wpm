@@ -15,6 +15,7 @@ const app = new Vue({
     data: {
         who: "client",
         message: "",
+        carCount: 3
     },
     async mounted() {
         const response = await this.axios.get<GetRandomCircuit>(GetRandomCircuitURI);
