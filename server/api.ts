@@ -1,6 +1,5 @@
 import * as koaRouter from "koa-router";
 import { getAllCircuits, saveCircuit } from "./circuit.service";
-import { log } from "./core/log";
 
 export const configureRoutes = (router: koaRouter) => {
 

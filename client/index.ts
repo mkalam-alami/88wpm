@@ -1,12 +1,13 @@
 // tslint:disable:no-unused-expression
 
 import axios from "axios";
+import * as io from "socket.io-client";
 import Vue from "vue";
 import VueAxios from "vue-axios";
 
 Vue.use(VueAxios, axios);
 
-new Vue({
+const app = new Vue({
     el: "#app",
     data: {
         who: "client",
@@ -16,4 +17,9 @@ new Vue({
         const response = await Vue.axios.get("/api");
         this.message = response.data;
     }
+});
+
+const socket = io.connect("/");
+socket.on("test", () => {
+    app.who += "!";
 });

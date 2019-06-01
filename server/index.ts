@@ -5,6 +5,7 @@ if (__filename.includes(".js")) {
 }
 
 import * as fs from "fs";
+import { createServer } from "http";
 import * as koa from "koa";
 import * as koaMount from "koa-mount";
 import * as koaRouter from "koa-router";
@@ -16,6 +17,7 @@ import * as webpack from "webpack";
 import { configureRoutes } from "./api";
 import config from "./core/config";
 import { log } from "./core/log";
+import { configureSocket } from "./socket";
 
 (async () => {
   log.info("Starting server...");
@@ -26,18 +28,20 @@ import { log } from "./core/log";
 
 function configureAndStartServer() {
   const app = new koa();
+  const httpServer = createServer(app.callback());
 
   // Router
   const router = new koaRouter();
   app.use(requestLogger);
   configureRoutes(router);
+  configureSocket(httpServer);
   app.use(koaStatic(config.absolutePathFromRoot("static")));
   app.use(koaMount("/dist/client", koaStatic(config.absolutePathFromRoot("dist/client"))));
   app.use(router.routes());
 
   // Start
   const port = config.PORT || 8000;
-  app.listen(port, () => {
+  httpServer.listen(port, () => {
     log.info(`Server started on port ${port}`);
   });
 }
