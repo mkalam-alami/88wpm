@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "module": "es2015",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "types": [],
+      "baseUrl": ".",
+      "strict": true
+    },
+    "include": [
+      "**/*.ts"
+    ]
+  }

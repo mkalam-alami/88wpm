@@ -1,0 +1,12 @@
+node_modules/
+dist/
+data/
+*.log
+*.out
+*.pid
+*.backup
+.DS_Store
+*~
+.vscode
+yarn.lock
+.nyc_output
