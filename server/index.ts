@@ -7,6 +7,7 @@ if (__filename.includes(".js")) {
 import * as fs from "fs";
 import { createServer } from "http";
 import * as koa from "koa";
+import * as koaBodyparser from "koa-bodyparser";
 import * as koaMount from "koa-mount";
 import * as koaRouter from "koa-router";
 import * as koaStatic from "koa-static";
@@ -32,6 +33,7 @@ function configureAndStartServer() {
 
   // Router
   const router = new koaRouter();
+  app.use(koaBodyparser());
   app.use(requestLogger);
   configureRoutes(router);
   configureSocket(httpServer);
@@ -110,9 +112,7 @@ function catchErrorsAndSignals() {
   function _doGracefulShutdown(_: NodeJS.Signals, exitCode: number = 0) {
     if (!alreadyShuttingDown) {
       alreadyShuttingDown = true;
-      const db = require("./core/db").default;
       log.info("Shutting down.");
-      db.knex.destroy(() => process.exit(exitCode));
     }
   }
 }

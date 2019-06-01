@@ -9,17 +9,27 @@
         <img id="logo" src="images/logo_transparent.png" />
     </div>
     <div id="app" v-cloak>
-        <div class="lane" v-for="n in lanes.length">
-            <img class="car" v-bind:src="'images/car' + n + '.png'" />
+        <div class="scroll-padding"></div>
+        <div class="lane" v-for="lane in lanes">
+            <div class="car"
+                v-bind:class="(lane.nick === nick ? 'own' : '') + ' ' + (lane.progressPercent > .85 ? 'almost-finished' : '')"
+                v-bind:style="'margin-left: ' + (lane.progressPercent*93.) + '%'" >
+                <span class="car-nick">{{ lane.nick }}</span>
+                <img class="car-pic"
+                    v-bind:src="'images/' + (lane.sprite || 'car1') + '.png'" />
+            </div>
         </div>
+        <div class="scroll-padding"></div>
         <div id="footer">
-            <div id="text"><span class="done">Lorem ipsum dolor sit amet, consectetur</span> <span class="todo">adipiscing</span> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+            <div id="text">
+                <span v-for="wordInfo in words" v-bind:class="wordInfo.state" class="word">{{ wordInfo.word }}</span>
+            </div>
             <div id="toolbar">
                 <div id="text-input-holder">
-                    <input id="text-input" />
+                    <input id="text-input" v-model="textInput" />
                 </div>
                 <div id="stats">
-                    {{ lanes.findIndex(lane => lane.nick === nick) + 1 | ordinal }}/{{ lanes.length }} &nbsp; 68wpm
+                    {{ ranking | ordinal }}/{{ lanes.length }} &nbsp; {{ wpm }}wpm
                 </div>
             </div>
         </div>

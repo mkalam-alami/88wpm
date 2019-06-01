@@ -1,7 +1,7 @@
+import { GetRandomCircuit, GetRandomCircuitURI, SaveReplay, SaveReplayURI } from "common/api-def";
 import * as koaRouter from "koa-router";
-import { getAllCircuits, saveCircuit } from "./circuit.service";
-import { GetRandomCircuitURI, GetRandomCircuit } from "common/api-def";
-import { findReplays } from "./replay.service";
+import { getAllCircuits } from "./circuit.service";
+import { findReplays, Replay, saveReplay } from "./replay.service";
 
 export const configureRoutes = (router: koaRouter) => {
 
@@ -12,21 +12,42 @@ export const configureRoutes = (router: koaRouter) => {
             return;
         }
 
-        const { name, text } = { ...circuits[0] }; // XXX
-        const replays = await findReplays({ circuitName: name });
+        const circuit = circuits[0]; // XXX
+
+        const replaySearchOptions: any = { circuitName: circuit.name };
+        if (context.query.nick) {
+            replaySearchOptions.nick = { $ne: context.query.nick };
+        }
+        const replays = await findReplays(replaySearchOptions);
 
         let botNumber = 1;
         const body: GetRandomCircuit = {
-            circuit: { name, text },
+            circuit: {
+                name: circuit.name,
+                text: circuit.text.split(/ /g)
+            },
             replays: replays.map((replay) => {
-                const { nick, wordTiming } = replay;
+                const { nick, sprite, wordTiming } = replay;
                 return {
-                    nick: replay.bestTime ? nick : ("BOT #" + botNumber++),
+                    nick: (replay.bestTime && nick) ? nick : ("BOT #" + botNumber++),
+                    sprite: "car2",
                     wordTiming
                 };
             })
         };
         context.body = body;
+    });
+
+    router.post(SaveReplayURI, async (context) => {
+        const replayData = (context.request as any).body as SaveReplay;
+        if (replayData && replayData.wordTiming.length > 0) { // XXX Validate word count
+            const newReplay: Replay = {
+                ...replayData,
+                timeMs: replayData.wordTiming[replayData.wordTiming.length - 1]
+            }
+            await saveReplay(newReplay);
+            context.status = 200;
+        }
     });
 
 };

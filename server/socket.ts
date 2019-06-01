@@ -1,5 +1,3 @@
-import { ReadCircuitMessage, ReadCircuitMessageType,
-    SaveReplayMessage, SaveReplayMessageType } from "common/socket-def";
 import { Server } from "http";
 import * as socketio from "socket.io";
 import { getAllCircuits } from "./circuit.service";
@@ -10,7 +8,7 @@ export const configureSocket = (app: Server) => {
     const io = socketio(app);
 
     io.on("connection", (socket) => {
-        const circuits = getAllCircuits();
+       /* const circuits = getAllCircuits();
         if (circuits.length > 0) {
             const { name, text } = circuits[0];
             const message: ReadCircuitMessage = { name, text };
@@ -18,16 +16,17 @@ export const configureSocket = (app: Server) => {
         }
 
         socket.on(SaveReplayMessageType, (data: SaveReplayMessage) => {
-            const { nick, circuitName, date, wordTiming } = data;
+            const { nick, sprite, circuitName, date, wordTiming } = data;
             const replay: Replay = {
                 nick,
+                sprite,
                 circuitName,
                 date,
                 timeMs: wordTiming[wordTiming.length - 1],
                 wordTiming
             }
             saveReplay(replay);
-        });
+        });*/
     });
 
 

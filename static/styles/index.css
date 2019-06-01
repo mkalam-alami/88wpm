@@ -6,6 +6,11 @@
     box-sizing: border-box;
 }
 
+html, body {
+    max-height: 100%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 body {
     background-color: #07021a;
 }
@@ -28,6 +33,7 @@ body {
 
 #app {
     overflow: hidden;
+    max-height: 100%;
 }
 
 [v-cloak] {
@@ -36,15 +42,41 @@ body {
 
 /* Lane */
 
+.scroll-padding {
+    height: 20px;
+    background-color: #07021a;
+}
+
 .lane {
-    height: 80px;
+    height: 60px;
     line-height: 80px;
     border-bottom: 3px solid #ae5a84;
     padding: 0 10px;
 }
 
 .car {
+    position: relative;
     vertical-align: middle;
+    transition: all .5s;
+}
+.car > .car-pic {
+    height: 32px;
+}
+.car.own > .car-pic {
+    height: 48px;
+}
+.car > .car-nick {
+    top: -10px;
+    left: 80px;
+    color: white;
+    position: absolute;
+    font-size: 18px;
+}
+.car.own > .car-nick {
+    left: 110px;
+}
+.almost-finished .car-nick {
+    left: -100px !important;
 }
 
 /* Footer */
@@ -63,15 +95,20 @@ body {
     padding: 15px;
     max-width: 800px;
     font-size: 24px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: #AAB;
     color: #07021a;
 }
-#text .done {
+#text .word {
+    margin-right: 6px;
+}
+#text .word.done {
     color: #666;
 }
-#text .todo {
+#text .word.todo {
     color: #006608;
+}
+#text .word.error {
+    color: #882200;
 }
 
 #toolbar {
@@ -89,7 +126,6 @@ body {
 #text-input {
     padding: 5px;
     font-size: 32px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: white;
     color: black;
     border: 0;
@@ -100,6 +136,5 @@ body {
     text-align: right;
     width: 49%;
     font-size: 32px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
     color: white;
 }
