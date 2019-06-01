@@ -11,6 +11,7 @@
       "types": ["node"]
     },
     "include": [
-      "server/**/*.ts"
+      "server/**/*.ts",
+      "common/**/*.ts"
     ]
   }

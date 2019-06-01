@@ -8,7 +8,7 @@ const babelOptions = {
   presets: [
     "@babel/typescript",
     [
-      '@babel/preset-env',
+      '@babel/env',
       {
         useBuiltIns: 'usage',
         corejs: 'core-js@3',
@@ -38,7 +38,6 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        include: rootPathTo('client'),
         use: [
           {
             loader: 'babel-loader',

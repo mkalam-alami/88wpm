@@ -5,10 +5,11 @@
       "moduleResolution": "node",
       "sourceMap": true,
       "types": [],
-      "baseUrl": ".",
+      "baseUrl": "..",
       "strict": true
     },
     "include": [
-      "**/*.ts"
+      "**/*.ts",
+      "../common/**/*.ts"
     ]
   }
