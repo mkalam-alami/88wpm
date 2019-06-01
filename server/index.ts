@@ -9,60 +9,51 @@ import * as koaRouter from "koa-router";
 import * as koaStatic from "koa-static";
 import * as koaMount from "koa-mount";
 import * as webpack from "webpack";
-import * as dotenv from "dotenv";
 import * as path from "path";
-import * as findUp from "find-up";
 import * as mkdirp from "mkdirp";
 import * as fs from "fs";
 import * as util from "util";
 
-import { log } from "./log";
+import { log } from "./core/log";
 import { configureRoutes } from "./api";
+import config from "./core/config";
 
-const ROOT_PATH = path.dirname(findUp.sync("package.json", { cwd: __dirname }));
 
 (async () => {
   log.info("Starting server...");
   catchErrorsAndSignals();
-  configureEnvironment();
   await buildFrontend();
   configureAndStartServer();
 })();
 
-
-function configureEnvironment() {
-  const envFile = process.env.NODE_ENV;
-  const configOutput = dotenv.config({
-    path: envFile + '.env'
-  });
-
-  if (configOutput.error) {
-    log.error(configOutput.error);
-    process.exit(1);
-  }
-}
 
 function configureAndStartServer() {
   const app = new koa();
 
   // Router
   const router = new koaRouter();
+  app.use(requestLogger);
   configureRoutes(router);
-  app.use(koaStatic(path.resolve(ROOT_PATH, 'static')));
-  app.use(koaMount('/dist/client', koaStatic(path.resolve(ROOT_PATH, 'dist/client'))));
+  app.use(koaStatic(config.absolutePathFromRoot('static')));
+  app.use(koaMount('/dist/client', koaStatic(config.absolutePathFromRoot('dist/client'))));
   app.use(router.routes());
 
   // Start
-  const port = process.env.PORT || 8000;
+  const port = config.PORT || 8000;
   app.listen(port, () => {
     log.info(`Server started on port ${port}`);
   });
 }
 
+async function requestLogger(context: koa.ParameterizedContext, next: Function): Promise<void> {
+  log.debug('Access: ' + context.url);
+  await next();
+}
+
 async function buildFrontend() {
-  if (process.env.DEBUG_BUILD_FRONTEND_SOURCES === 'true') {
-    const env = process.env.NODE_ENV || "development";
-    const webpackConfig = require(path.join(ROOT_PATH, "./webpack." + env + ".js"));
+  if (config.DEBUG_BUILD_FRONTEND_SOURCES === 'true') {
+    const env = config.NODE_ENV || "development";
+    const webpackConfig = require(config.absolutePathFromRoot("client/webpack." + env + ".js"));
 
     await _createFolderIfMissing(webpackConfig.output.path);
 
