@@ -4,20 +4,18 @@ if (__filename.includes(".js")) {
   require("module-alias/register");
 }
 
+import * as fs from "fs";
 import * as koa from "koa";
+import * as koaMount from "koa-mount";
 import * as koaRouter from "koa-router";
 import * as koaStatic from "koa-static";
-import * as koaMount from "koa-mount";
-import * as webpack from "webpack";
-import * as path from "path";
 import * as mkdirp from "mkdirp";
-import * as fs from "fs";
 import * as util from "util";
+import * as webpack from "webpack";
 
-import { log } from "./core/log";
 import { configureRoutes } from "./api";
 import config from "./core/config";
-
+import { log } from "./core/log";
 
 (async () => {
   log.info("Starting server...");
@@ -26,7 +24,6 @@ import config from "./core/config";
   configureAndStartServer();
 })();
 
-
 function configureAndStartServer() {
   const app = new koa();
 
@@ -34,8 +31,8 @@ function configureAndStartServer() {
   const router = new koaRouter();
   app.use(requestLogger);
   configureRoutes(router);
-  app.use(koaStatic(config.absolutePathFromRoot('static')));
-  app.use(koaMount('/dist/client', koaStatic(config.absolutePathFromRoot('dist/client'))));
+  app.use(koaStatic(config.absolutePathFromRoot("static")));
+  app.use(koaMount("/dist/client", koaStatic(config.absolutePathFromRoot("dist/client"))));
   app.use(router.routes());
 
   // Start
@@ -45,13 +42,13 @@ function configureAndStartServer() {
   });
 }
 
-async function requestLogger(context: koa.ParameterizedContext, next: Function): Promise<void> {
-  log.debug('Access: ' + context.url);
+async function requestLogger(context: koa.ParameterizedContext, next: () => Promise<void>): Promise<void> {
+  log.debug("Access: " + context.url);
   await next();
 }
 
 async function buildFrontend() {
-  if (config.DEBUG_BUILD_FRONTEND_SOURCES === 'true') {
+  if (config.DEBUG_BUILD_FRONTEND_SOURCES === "true") {
     const env = config.NODE_ENV || "development";
     const webpackConfig = require(config.absolutePathFromRoot("client/webpack." + env + ".js"));
 
@@ -88,7 +85,6 @@ async function buildFrontend() {
     });
   }
 }
-
 
 function catchErrorsAndSignals() {
   // Display unhandled errors more nicely

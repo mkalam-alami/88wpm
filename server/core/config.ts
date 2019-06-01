@@ -1,18 +1,19 @@
-import * as path from "path";
+// tslint:disable:no-console
+
 import * as dotenv from "dotenv";
 import * as findUp from "find-up";
-import { log } from "./log";
+import * as path from "path";
 
 class Config {
 
     constructor() {
         const envFile = process.env.NODE_ENV;
         const configOutput = dotenv.config({
-            path: envFile + '.env'
+            path: envFile + ".env"
         });
-        
+
         if (configOutput.error) {
-            log.error(configOutput.error);
+            console.error(configOutput.error);
             process.exit(1);
         }
 
@@ -32,15 +33,15 @@ class Config {
     }
 
     public get NODE_ENV() {
-        return process.env.NODE_ENV || 'development';
+        return process.env.NODE_ENV || "development";
     }
-    
+
     public get DATA_PATH() {
-        return process.env.DATA_PATH || 'data/';
+        return process.env.DATA_PATH || "data/";
     }
 
     public get LOG_LEVEL() {
-        return process.env.LOG_LEVEL || 'info';
+        return process.env.LOG_LEVEL || "info";
     }
 
     public absolutePathFromRoot(relativePath: string): string {
