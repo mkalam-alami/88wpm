@@ -9,7 +9,7 @@
         <img id="logo" src="images/logo_transparent.png" />
     </div>
     <div id="app" v-cloak>
-        <div class="lane" v-for="n in carCount">
+        <div class="lane" v-for="n in lanes.length">
             <img class="car" v-bind:src="'images/car' + n + '.png'" />
         </div>
         <div id="footer">
@@ -19,7 +19,7 @@
                     <input id="text-input" />
                 </div>
                 <div id="stats">
-                    0:00:00
+                    {{ lanes.findIndex(lane => lane.nick === nick) + 1 | ordinal }}/{{ lanes.length }} &nbsp; 68wpm
                 </div>
             </div>
         </div>

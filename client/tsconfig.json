@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "paths": { "*": ["types/*"] },
+        "paths": { "*": ["types/*"] },
       "target": "es2015",
       "module": "es2015",
       "moduleResolution": "node",

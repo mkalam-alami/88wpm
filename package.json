@@ -62,6 +62,7 @@
     "validator": "^7.0.0",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
+    "vue-numeral-filter": "^1.1.1",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.3.0",
     "webpack-merge": "^4.2.1",
