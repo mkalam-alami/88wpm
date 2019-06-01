@@ -59,7 +59,7 @@ new Vue({
                         this.gameOver = true;
                     }
 
-                    const lettersTyped = this.circuit.text.slice(0, this.ownLane.wordTiming.length).join('').length
+                    const lettersTyped = this.circuit.text.slice(0, this.ownLane.wordTiming.length).join("").length;
                     const wordsTyped = lettersTyped / 4.5; // English average
                     this.wpm = Math.floor(wordsTyped * 60000. / elapsedTime);
                 }

@@ -34,7 +34,7 @@ function configureAndStartServer() {
   // Router
   const router = new koaRouter();
   app.use(koaBodyparser());
-  app.use(requestLogger);
+  // app.use(requestLogger);
   configureRoutes(router);
   configureSocket(httpServer);
   app.use(koaStatic(config.absolutePathFromRoot("static")));

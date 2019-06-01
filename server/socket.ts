@@ -29,5 +29,4 @@ export const configureSocket = (app: Server) => {
         });*/
     });
 
-
-}
+};

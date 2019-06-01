@@ -44,7 +44,7 @@ export const configureRoutes = (router: koaRouter) => {
             const newReplay: Replay = {
                 ...replayData,
                 timeMs: replayData.wordTiming[replayData.wordTiming.length - 1]
-            }
+            };
             await saveReplay(newReplay);
             context.status = 200;
         }
