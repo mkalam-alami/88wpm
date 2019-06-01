@@ -1,4 +1,4 @@
-<img src="static/images/logo.jpeg" width="200" />  
+<img src="static/images/logo.jpg" width="200" />  
 
 An online typing game. See also the [Alakajam entry page](https://alakajam.com/6th-alakajam/696/in-progress-88wpm/).
 
