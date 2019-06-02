@@ -13,7 +13,7 @@ Vue.use(vueNumeralFilter);
 
 const socket = io.connect("/");
 
-type ActiveScreen = "menu" | "play" | "gameOver";
+type ActiveScreen = "menu" | "countdown" | "play" | "gameOver";
 
 interface CarLane {
     nick: string;
@@ -35,8 +35,11 @@ const defaultData = {
     startTime: 0,
     currentTime: 0,
     activeScreen: "menu" as ActiveScreen,
-    wpm: 0
+    wpm: 0,
+    lightsOn: 0
 };
+
+let refreshInterval: number|null = null;
 
 new Vue({
     el: "#app",
@@ -57,9 +60,10 @@ new Vue({
                 this.currentWordError = false;
                 if (expectedWord === value) {
                     this.ownLane.wordTiming.push(elapsedTime);
-                    this.textInput = "";
                     if (this.ownLane.wordTiming.length >= this.circuit.text.length) {
                         this.activeScreen = "gameOver";
+                    } else {
+                        this.textInput = "";
                     }
 
                     const lettersTyped = this.circuit.text.slice(0, this.ownLane.wordTiming.length).join("").length;
@@ -68,8 +72,8 @@ new Vue({
                 }
             }
         },
-        async gameOver(over: boolean) {
-            if (over) {
+        async activeScreen(value: ActiveScreen) {
+            if (value === "gameOver") {
                 const replay: SaveReplay = {
                     nick: this.nick,
                     circuitName: this.circuit.name,
@@ -78,8 +82,6 @@ new Vue({
                     wordTiming: this.ownLane.wordTiming
                 };
                 await this.axios.post<SaveReplay>(SaveReplayURI, replay);
-            } else {
-                await this.newGame();
             }
         }
     },
@@ -111,24 +113,10 @@ new Vue({
         }
     },
 
-    async mounted() {
-        setInterval(() => {
-            // Force progress refresh of other cars
-            if (this.activeScreen === "play") {
-                this.currentTime = Date.now();
-                const elapsedTime = this.currentTime - this.startTime;
-                this.lanes.forEach((lane) => {
-                    lane.progressPercent = ui.progressPercentFromWordTiming(
-                        elapsedTime, lane.wordTiming, this.circuit.text.length);
-                });
-            }
-        }, 500);
-    },
-
     methods: {
         async newGame() {
             this.reset();
-            this.activeScreen = "play";
+            this.activeScreen = "countdown";
             this.nick = this.nick || "unknown";
             const response = await this.axios.get<GetRandomCircuit>(GetRandomCircuitURI + `?nick=${this.nick}`);
             this.circuit = response.data.circuit;
@@ -136,14 +124,36 @@ new Vue({
                 { nick: this.nick, sprite: this.sprite, wordTiming: [], progressPercent: 0.0 },
                 ...response.data.replays.map((replay) => ({ ...replay, progressPercent: 0.0 }))
             ];
-            this.startTime = Date.now();
-            (document.getElementById("text-input") as HTMLInputElement).focus();
+            this.startTime = Date.now() + 4000;
+            focusTextInput();
+
+            clearInterval(refreshInterval!);
+            refreshInterval = setInterval(() => {
+                this.currentTime = Date.now();
+                const elapsedTime = this.currentTime - this.startTime;
+
+                // Force progress refresh of other cars
+                this.lanes.forEach((lane) => {
+                    lane.progressPercent = ui.progressPercentFromWordTiming(
+                        elapsedTime, lane.wordTiming, this.circuit.text.length);
+                });
+
+                // Force refresh of countdown
+                if (this.activeScreen === "countdown") {
+                    this.lightsOn = elapsedTime / 1000. + 4.;
+                    if (this.lightsOn >= 4) {
+                        this.activeScreen = "play";
+                        focusTextInput();
+                    }
+                }
+            }, 500);
         },
         reset() {
             this.circuit = { name: "", text: [] };
             this.lanes = [{ nick: this.nick, sprite: this.sprite, wordTiming: [], progressPercent: 0.0 }];
             this.activeScreen = "menu";
             this.wpm = 0.;
+            this.lightsOn = 0;
         },
         onTextInput(event: KeyboardEvent) {
             if (event.keyCode === 27/*ESCAPE*/) {
@@ -161,4 +171,8 @@ function hasFinishedSameWordBefore(otherLane: CarLane, ownLane: CarLane) {
     return otherLane.progressPercent > 0
         && otherLane.progressPercent === ownLane.progressPercent
         && otherLane.wordTiming[otherLane.wordTiming.length - 1] < ownLane.wordTiming[ownLane.wordTiming.length - 1];
+}
+
+function focusTextInput() {
+    (document.getElementById("text-input") as HTMLInputElement).focus();
 }

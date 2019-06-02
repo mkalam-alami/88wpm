@@ -1,4 +1,7 @@
+import { shuffle } from "lodash";
 import { replaysCollection } from "./core/db";
+
+const MAX_REPLAYS = 29;
 
 export interface Replay {
     _id?: string;
@@ -15,8 +18,42 @@ export async function findReplay(options: Partial<Replay>): Promise<Replay> {
     return replaysCollection.asyncFindOne(options);
 }
 
-export async function findReplays(options: Partial<Replay>|any): Promise<Replay[]> {
-    return replaysCollection.asyncFind(options);
+export async function chooseReplaysForGame(circuitName: string, nick: string): Promise<Replay[]> {
+    const interestingReplays = await getReplays({
+        circuitName,
+        nick: { $ne: nick },
+        bestTime: true
+    });
+
+    let replays;
+    if (interestingReplays.length > MAX_REPLAYS) {
+        replays = shuffle(interestingReplays).slice(0, MAX_REPLAYS);
+    } else {
+        const fillerReplays = await getReplays({
+            circuitName,
+            nick: { $ne: nick },
+            bestTime: false
+        }, MAX_REPLAYS - interestingReplays.length);
+        replays = interestingReplays.concat(fillerReplays);
+    }
+
+    return shuffle(replays);
+}
+
+export async function getReplays(options: Partial<Replay>|any, maxSize?: number): Promise<Replay[]> {
+    return new Promise((resolve, reject) => {
+        let cursor: Nedb.Cursor<Replay> = replaysCollection.find(options);
+        if (maxSize) {
+            cursor = cursor.limit(maxSize);
+        }
+        cursor.exec((err, documents) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(documents);
+            }
+        });
+    });
 }
 
 export async function saveReplay(replay: Replay): Promise<void> {

@@ -1,24 +1,13 @@
 import { GetRandomCircuit, GetRandomCircuitURI, SaveReplay, SaveReplayURI } from "common/api-def";
 import * as koaRouter from "koa-router";
-import { getAllCircuits } from "./circuit.service";
-import { findReplays, Replay, saveReplay } from "./replay.service";
+import { getRandomCircuit } from "./circuit.service";
+import { chooseReplaysForGame, Replay, saveReplay } from "./replay.service";
 
 export const configureRoutes = (router: koaRouter) => {
 
     router.get(GetRandomCircuitURI, async (context) => {
-        const circuits = getAllCircuits(); // XXX
-        if (circuits.length === 0) {
-            context.status = 204;
-            return;
-        }
-
-        const circuit = circuits[0]; // XXX
-
-        const replaySearchOptions: any = { circuitName: circuit.name };
-        if (context.query.nick) {
-            replaySearchOptions.nick = { $ne: context.query.nick };
-        }
-        const replays = await findReplays(replaySearchOptions);
+        const circuit = getRandomCircuit();
+        const replays = await chooseReplaysForGame(circuit.name, context.query.nick);
 
         let botNumber = 1;
         const body: GetRandomCircuit = {
@@ -27,7 +16,7 @@ export const configureRoutes = (router: koaRouter) => {
                 text: circuit.text.split(/ /g)
             },
             replays: replays.map((replay) => {
-                const { nick, sprite, wordTiming } = replay;
+                const { nick, wordTiming } = replay;
                 return {
                     nick: (replay.bestTime && nick) ? nick : ("BOT #" + botNumber++),
                     sprite: "car2",

@@ -10,7 +10,7 @@
     </div>
     <div id="app" v-cloak>
         <div class="scroll-padding"></div>
-        <div class="lane" v-for="lane in lanes">
+        <div class="lane" v-if="activeScreen !== 'menu'" v-for="lane in lanes">
             <div class="car"
                 v-bind:class="(lane.nick === nick ? 'own' : '') + ' ' + (lane.progressPercent > .85 ? 'almost-finished' : '')"
                 v-bind:style="'margin-left: ' + (lane.progressPercent*93.) + '%'" >
@@ -22,13 +22,13 @@
         <div class="scroll-padding"></div>
         <div id="footer">
             <div id="text">
-                <span v-for="wordInfo in words" v-bind:class="wordInfo.state" class="word">{{ wordInfo.word }}</span>
+                <span v-for="wordInfo in words" v-bind:class="wordInfo.state" class="word">{{ wordInfo.word }} </span>
             </div>
             <div id="toolbar">
                 <div id="text-input-holder">
                     <input id="text-input" v-model="textInput" v-on:keyup="onTextInput($event)" />
                 </div>
-                <div id="stats" v-if="activeScreen === 'play'">
+                <div id="stats" v-if="activeScreen !== 'menu'">
                     {{ ranking | ordinal }}/{{ lanes.length }} &nbsp; {{ wpm }}wpm
                 </div>
             </div>
@@ -52,11 +52,19 @@
                 <h1>Game complete!</h1>
                 <div class="overlay-panel-body">
                     <h2>Ranking: {{ ranking | ordinal }}/{{ lanes.length }}</h2>
-                    <h2>Typing speed: {{ wpm }}wpm</p>
-                    <p class="legend" v-if="wpm > 88">Over 88 words per minute Marty! A pace from the future!</p>
+                    <h2>Typing speed: {{ wpm }}wpm</h2>
+                    <p class="legend" v-if="wpm >= 88">Over 88 words per minute Marty! A pace from the future!</p>
                     
                     <input type="button" v-on:click="newGame()" value="New game" />
                     <input type="button" v-on:click="reset()" value="Back to menu" />
+                </div>
+            </div>
+        </div>
+
+        <div v-if="activeScreen === 'countdown'" class="overlay-transparent">
+            <div class="overlay-panel">
+                <div class="red-lights">
+                <span v-for="n in 3" class="red-light" v-bind:class="(n <= lightsOn) ? 'on' : ''">
                 </div>
             </div>
         </div>
