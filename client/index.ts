@@ -6,8 +6,8 @@ import Vue from "vue";
 import VueAxios from "vue-axios";
 import vueNumeralFilter from "vue-numeral-filter";
 import { GetRandomCircuit, GetRandomCircuitURI, SaveReplay, SaveReplayURI } from "../common/api-def";
-import * as ui from "./ui";
 import { sanitizeNick } from "../common/form";
+import * as ui from "./ui";
 
 Vue.use(VueAxios, axios);
 Vue.use(vueNumeralFilter);
@@ -156,6 +156,7 @@ const app = new Vue({
             this.activeScreen = "menu";
             this.wpm = 0.;
             this.lightsOn = 0;
+            this.textInput = "";
         },
         onTextInput(event: KeyboardEvent) {
             if (event.keyCode === 27/*ESCAPE*/) {

@@ -1,6 +1,6 @@
+import { sanitizeNick } from "common/form";
 import { shuffle } from "lodash";
 import { replaysCollection } from "./core/db";
-import { sanitizeNick } from "common/form";
 
 const MAX_REPLAYS = 29;
 
