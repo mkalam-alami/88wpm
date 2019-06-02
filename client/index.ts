@@ -7,9 +7,12 @@ import VueAxios from "vue-axios";
 import vueNumeralFilter from "vue-numeral-filter";
 import { GetRandomCircuit, GetRandomCircuitURI, SaveReplay, SaveReplayURI } from "../common/api-def";
 import * as ui from "./ui";
+import { sanitizeNick } from "../common/form";
 
 Vue.use(VueAxios, axios);
 Vue.use(vueNumeralFilter);
+
+const DEBUG_QUICK_PLAY = false;
 
 const socket = io.connect("/");
 
@@ -41,7 +44,7 @@ const defaultData = {
 
 let refreshInterval: number|null = null;
 
-new Vue({
+const app = new Vue({
     el: "#app",
     data: defaultData,
 
@@ -58,12 +61,12 @@ new Vue({
             } else {
                 const elapsedTime = Date.now() - this.startTime;
                 this.currentWordError = false;
-                if (expectedWord === value) {
+                if (value.startsWith(expectedWord)) {
                     this.ownLane.wordTiming.push(elapsedTime);
                     if (this.ownLane.wordTiming.length >= this.circuit.text.length) {
                         this.activeScreen = "gameOver";
                     } else {
-                        this.textInput = "";
+                        this.textInput = value.slice(expectedWord.length);
                     }
 
                     const lettersTyped = this.circuit.text.slice(0, this.ownLane.wordTiming.length).join("").length;
@@ -117,7 +120,7 @@ new Vue({
         async newGame() {
             this.reset();
             this.activeScreen = "countdown";
-            this.nick = this.nick || "unknown";
+            this.nick = sanitizeNick(this.nick) || "unknown";
             const response = await this.axios.get<GetRandomCircuit>(GetRandomCircuitURI + `?nick=${this.nick}`);
             this.circuit = response.data.circuit;
             this.lanes = [
@@ -125,7 +128,6 @@ new Vue({
                 ...response.data.replays.map((replay) => ({ ...replay, progressPercent: 0.0 }))
             ];
             this.startTime = Date.now() + 4000;
-            focusTextInput();
 
             clearInterval(refreshInterval!);
             refreshInterval = setInterval(() => {
@@ -160,6 +162,13 @@ new Vue({
                 this.reset();
             }
         }
+    },
+
+    mounted() {
+        if (DEBUG_QUICK_PLAY) {
+            this.nick = "DEBUG";
+            this.newGame();
+        }
     }
 });
 
@@ -174,5 +183,7 @@ function hasFinishedSameWordBefore(otherLane: CarLane, ownLane: CarLane) {
 }
 
 function focusTextInput() {
-    (document.getElementById("text-input") as HTMLInputElement).focus();
+    setTimeout(() => {
+        (document.getElementById("text-input") as HTMLInputElement).focus();
+    }, 1);
 }

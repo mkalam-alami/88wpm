@@ -1,11 +1,13 @@
 import { shuffle } from "lodash";
 import { replaysCollection } from "./core/db";
+import { sanitizeNick } from "common/form";
 
 const MAX_REPLAYS = 29;
 
 export interface Replay {
     _id?: string;
     nick: string;
+    username?: string;
     sprite: string;
     timeMs: number;
     wordTiming: number[]; // offset from start, 1 entry per word
@@ -19,9 +21,10 @@ export async function findReplay(options: Partial<Replay>): Promise<Replay> {
 }
 
 export async function chooseReplaysForGame(circuitName: string, nick: string): Promise<Replay[]> {
+    const username = generateUsername(sanitizeNick(nick));
     const interestingReplays = await getReplays({
         circuitName,
-        nick: { $ne: nick },
+        username: { $ne: username },
         bestTime: true
     });
 
@@ -57,7 +60,11 @@ export async function getReplays(options: Partial<Replay>|any, maxSize?: number)
 }
 
 export async function saveReplay(replay: Replay): Promise<void> {
+    replay.nick = sanitizeNick(replay.nick);
+    replay.username = generateUsername(replay.nick);
+
     const { nick, circuitName } = replay;
+
     const existingReplay = await findReplay({ nick, circuitName, bestTime: true });
     if (existingReplay) {
         if (existingReplay.timeMs < replay.timeMs) {
@@ -75,4 +82,8 @@ export async function saveReplay(replay: Replay): Promise<void> {
 
 export function getAllReplays(): Replay[] {
     return replaysCollection.getAllData();
+}
+
+function generateUsername(nick: string) {
+    return nick.toLowerCase().trim();
 }

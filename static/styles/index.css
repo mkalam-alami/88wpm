@@ -8,7 +8,7 @@
 
 html, body {
     max-height: 100%;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -33,6 +33,11 @@ input[type=button] {
 }
 input[type=button]:hover {
     background-color: #dba1be;
+}
+input[disabled], input[disabled]:hover {
+    background-color: #888;
+    cursor: default;
+    color: #333;
 }
 
 p {
@@ -125,15 +130,31 @@ p {
     color: #07021a;
 }
 #text .word {
+    display: inline-block;
+    margin-right: 5px;
 }
 #text .word.done {
-    color: #666;
+    color: #777;
 }
 #text .word.todo {
-    color: #006608;
+    color: #008808;
+    text-decoration: underline;
 }
 #text .word.error {
-    color: #882200;
+    color: #A00;
+    text-decoration: wavy underline;
+    animation: shake 0.2s 1 linear;
+    -webkit-animation: shake 0.2s 1 linear;
+    -moz-animation: shake 0.2s 1 linear;
+    -o-animation: shake 0.2s 1 linear;
+}
+@keyframes shake {
+    0% { transform: translate(10px); }
+    20% { transform: translate(-10px); }
+    40% { transform: translate(6px); }
+    60% { transform: translate(-6px); }
+    80% { transform: translate(3px); }
+    100% { transform: translate(3px); }
 }
 
 #toolbar {
@@ -150,6 +171,11 @@ p {
 
 #text-input {
     font-size: 32px;
+    cursor: text;
+}
+#text-input.error {
+    color: #A00;
+    text-decoration: wavy underline;
 }
 
 #stats {
@@ -226,5 +252,5 @@ p {
     box-shadow: -5px -5px 20px black inset;
 }
 .red-light.on {
-    background-color: #882200;
+    background-color: #C00;
 }

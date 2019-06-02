@@ -2,6 +2,7 @@ import { GetRandomCircuit, GetRandomCircuitURI, SaveReplay, SaveReplayURI } from
 import * as koaRouter from "koa-router";
 import { getRandomCircuit } from "./circuit.service";
 import { chooseReplaysForGame, Replay, saveReplay } from "./replay.service";
+import { SSL_OP_NO_TICKET } from "constants";
 
 export const configureRoutes = (router: koaRouter) => {
 
@@ -32,6 +33,7 @@ export const configureRoutes = (router: koaRouter) => {
         if (replayData && replayData.wordTiming.length > 0) { // XXX Validate word count
             const newReplay: Replay = {
                 ...replayData,
+                nick: replayData.nick.trim(),
                 timeMs: replayData.wordTiming[replayData.wordTiming.length - 1]
             };
             await saveReplay(newReplay);
