@@ -134,10 +134,10 @@ p {
     margin-right: 5px;
 }
 #text .word.done {
-    color: #777;
+    color: #888;
 }
 #text .word.todo {
-    color: #008808;
+    color: #058;
     text-decoration: underline;
 }
 #text .word.error {
