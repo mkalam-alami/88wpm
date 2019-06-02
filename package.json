@@ -86,6 +86,7 @@
     "tslint": "^5.17.0"
   },
   "_moduleAliases": {
+    "common": "dist/common",
     "server": "dist/server"
   }
 }
