@@ -1,5 +1,4 @@
 import { GetRandomCircuit, GetRandomCircuitURI, SaveReplay, SaveReplayURI } from "common/api-def";
-import { SSL_OP_NO_TICKET } from "constants";
 import * as koaRouter from "koa-router";
 import { getRandomCircuit } from "./circuit.service";
 import { chooseReplaysForGame, Replay, saveReplay } from "./replay.service";

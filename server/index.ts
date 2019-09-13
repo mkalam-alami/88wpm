@@ -12,13 +12,14 @@ import * as koaMount from "koa-mount";
 import * as koaRouter from "koa-router";
 import * as koaStatic from "koa-static";
 import * as mkdirp from "mkdirp";
+import * as socketio from "socket.io";
 import * as util from "util";
 import * as webpack from "webpack";
 
 import { configureRoutes } from "./api";
 import config from "./core/config";
 import { log } from "./core/log";
-import { configureSocket } from "./socket";
+import gameManager from "./game-manager";
 
 (async () => {
   log.info("Starting server...");
@@ -34,9 +35,14 @@ function configureAndStartServer() {
   // Router
   const router = new koaRouter();
   app.use(koaBodyparser());
-  // app.use(requestLogger);
+  if (process.env.DEBUG_REQUESTS) {
+    app.use(requestLogger);
+  }
   configureRoutes(router);
-  configureSocket(httpServer);
+
+  const io = socketio(app);
+  gameManager(io);
+
   app.use(koaStatic(config.absolutePathFromRoot("static")));
   app.use(koaMount("/dist/client", koaStatic(config.absolutePathFromRoot("dist/client"))));
   app.use(router.routes());
@@ -46,6 +52,7 @@ function configureAndStartServer() {
   httpServer.listen(port, () => {
     log.info(`Server started on port ${port}`);
   });
+
 }
 
 async function requestLogger(context: koa.ParameterizedContext, next: () => Promise<void>): Promise<void> {

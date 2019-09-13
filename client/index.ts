@@ -117,7 +117,11 @@ const app = new Vue({
     },
 
     methods: {
-        async newGame() {
+        async startLive() {
+
+        }
+
+        async startTimeAttack() {
             this.reset();
             this.activeScreen = "countdown";
             this.nick = sanitizeNick(this.nick) || "unknown";
@@ -168,7 +172,7 @@ const app = new Vue({
     mounted() {
         if (DEBUG_QUICK_PLAY) {
             this.nick = "DEBUG";
-            this.newGame();
+            this.newOfflineGame();
         }
     }
 });
